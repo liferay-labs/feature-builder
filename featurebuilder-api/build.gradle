@@ -1,0 +1,51 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.1.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+		maven {
+			url "https://cdn.lfrs.sl/repository.liferay.com/nexus/content/groups/public"
+		}
+	}
+	dependencies {
+		classpath group: "com.liferay", name: "com.liferay.gradle.plugins.source.formatter", version: "1.0.90"
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: "com.liferay.source.formatter"
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+jar {
+	baseName = 'feature-builder'
+	version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+dependencies {
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+	compile group: 'commons-io', name: 'commons-io', version: '2.5'
+
+	runtime group: "org.springframework.boot", name: "spring-boot-starter-actuator", version: "1.4.3.RELEASE"
+
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.13'
+}
+
+task run(dependsOn: ':bootRun') << {
+    println 'Boot'
+}
