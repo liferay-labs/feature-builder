@@ -36,6 +36,7 @@ dependencies {
 dependencies {
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
 	compile group: 'commons-io', name: 'commons-io', version: '2.5'
+	compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '4.6.0.201612231935-r'
 
 	runtime group: "org.springframework.boot", name: "spring-boot-starter-actuator", version: "1.4.3.RELEASE"
 

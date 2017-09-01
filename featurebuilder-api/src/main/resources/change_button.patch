@@ -1,0 +1,49 @@
+From 1a78bf035873617270b060e9c4b65b58785d0895 Mon Sep 17 00:00:00 2001
+From: Julio Camarero <julio.camarero@liferay.com>
+Date: Fri, 1 Sep 2017 12:46:10 +0200
+Subject: [PATCH 1/2] Changing button label
+
+---
+ lexicon-test-web/src/main/resources/META-INF/resources/view.jsp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lexicon-test-web/src/main/resources/META-INF/resources/view.jsp b/lexicon-test-web/src/main/resources/META-INF/resources/view.jsp
+index 95bfe91..8a2ef35 100644
+--- a/lexicon-test-web/src/main/resources/META-INF/resources/view.jsp
++++ b/lexicon-test-web/src/main/resources/META-INF/resources/view.jsp
+@@ -103,7 +103,7 @@
+ 
+ <liferay-frontend:add-menu>
+ 	<liferay-frontend:add-menu-item
+-		title='<%= LanguageUtil.get(request, "add-new-super-hero")%>'
++		title='<%= LanguageUtil.get(request, "add-new-game-of-thrones-character")%>'
+ 		url="<%= lexiconTestDisplayContext.getEditURL().toString() %>"
+ 	/>
+ </liferay-frontend:add-menu>
+\ No newline at end of file
+-- 
+2.11.0 (Apple Git-81)
+
+
+From c5cb2c3383429b42dd84edb2d1c349a7e4a46332 Mon Sep 17 00:00:00 2001
+From: Julio Camarero <julio.camarero@liferay.com>
+Date: Fri, 1 Sep 2017 14:13:09 +0200
+Subject: [PATCH 2/2] Adding Language Key
+
+---
+ lexicon-test-web/src/main/resources/content/Language.properties | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lexicon-test-web/src/main/resources/content/Language.properties b/lexicon-test-web/src/main/resources/content/Language.properties
+index c628759..82c9998 100644
+--- a/lexicon-test-web/src/main/resources/content/Language.properties
++++ b/lexicon-test-web/src/main/resources/content/Language.properties
+@@ -1,3 +1,3 @@
+-add-new-super-hero=Add new Super Hero
++add-new-game-of-thrones-character=Add new Game of Thrones character
+ no-super-hero-were-found=No Super Hero were found.
+ super-hero=Super Hero
+\ No newline at end of file
+-- 
+2.11.0 (Apple Git-81)
+
