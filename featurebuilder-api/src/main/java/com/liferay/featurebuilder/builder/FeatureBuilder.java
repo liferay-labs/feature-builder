@@ -14,6 +14,8 @@
 
 package com.liferay.featurebuilder.builder;
 
+import com.liferay.featurebuilder.model.Build;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -37,23 +39,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class FeatureBuilder {
 
-	public String build(String userName, String featureId, String devOptionId)
-		throws GitAPIException, IOException {
-
-		String branchName = _getBranchName(userName);
+	public void build(Build build) throws GitAPIException, IOException {
+		String branchName = _getBranchName(build.getUserName());
 
 		File dir = _getCloneDir(branchName);
 
-		File patch = _getPatch(featureId, devOptionId);
+		File patch = _getPatch(build.getFeatureId(), build.getDevOptionId());
 
 		BuildExecution buildExecution = new BuildExecution(
-			branchName, devOptionId, dir, featureId, patch, userName,
-			_credentialsManager, _githubRepo, _githubRepositoryCloneURL);
-
-		String pullRequestURL = null;
+			build, branchName, dir, patch, _credentialsManager, _githubRepo,
+			_githubRepositoryCloneURL);
 
 		try {
-			pullRequestURL = buildExecution.execute();
+			buildExecution.execute();
 		}
 		catch (Exception e) {
 			_log.error("Error building the feature", e);
@@ -61,8 +59,6 @@ public class FeatureBuilder {
 		finally {
 			buildExecution.cleanUp();
 		}
-
-		return pullRequestURL;
 	}
 
 	private String _getBranchName(String userName) {

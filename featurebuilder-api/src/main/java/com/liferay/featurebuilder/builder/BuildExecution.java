@@ -16,6 +16,8 @@ package com.liferay.featurebuilder.builder;
 
 import static java.util.Collections.singleton;
 
+import com.liferay.featurebuilder.model.Build;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -43,16 +45,14 @@ import org.slf4j.LoggerFactory;
 public class BuildExecution {
 
 	public BuildExecution(
-		String branch, String devOptionId, File directory, String featureId,
-		File patch, String userName, CredentialsManager credentialsManager,
-		String githubRepo, String githubRepoCloneURL) {
+		Build build, String branch, File directory, File patch,
+		CredentialsManager credentialsManager, String githubRepo,
+		String githubRepoCloneURL) {
 
 		_branch = branch;
-		_devOptionId = devOptionId;
+		_build = build;
 		_directory = directory;
-		_featureId = featureId;
 		_patch = patch;
-		_userName = userName;
 		_credentialsManager = credentialsManager;
 		_githubRepo = githubRepo;
 		_githubRepoCloneURL = githubRepoCloneURL;
@@ -66,7 +66,7 @@ public class BuildExecution {
 		}
 	}
 
-	public String execute() throws GitAPIException, IOException {
+	public void execute() throws GitAPIException, IOException {
 		_cloneRepo();
 
 		_checkoutNewBranch();
@@ -75,13 +75,7 @@ public class BuildExecution {
 
 		_push();
 
-		PullRequest pullRequest = _createPullRequest();
-
-		String pullRequestURL = pullRequest.getHtmlUrl();
-
-		_log.debug("Pull request successfully sent at: " + pullRequestURL);
-
-		return pullRequestURL;
+		_createPullRequest();
 	}
 
 	public void setDefaultBranch(String defaultBranch) {
@@ -89,8 +83,6 @@ public class BuildExecution {
 	}
 
 	private void _applyPatch() throws FileNotFoundException, GitAPIException {
-		//File patch = _getPatch(featureId, devOptionId);
-
 		_log.debug("Applying patch: " + _patch.getName());
 
 		_git.apply()
@@ -107,8 +99,13 @@ public class BuildExecution {
 				_credentialsManager.getGithubUser(),
 				_credentialsManager.getGithubUserEmail())
 			.setMessage(
-				"Adding Feature " + _featureId + " - Option: " + _devOptionId)
+				"Adding Feature " + _build.getFeatureId() + " - Option: " +
+				_build.getDevOptionId())
 			.call();
+
+		_build.addLog(
+			"Developed Feature: " + _build.getFeatureId() + " - Option: " +
+			_build.getDevOptionId());
 	}
 
 	private void _checkoutNewBranch() throws GitAPIException {
@@ -118,6 +115,8 @@ public class BuildExecution {
 			.setCreateBranch(true)
 			.setName(_branch)
 			.call();
+
+		_build.addLog("Checked Branch: " + _branch);
 	}
 
 	private void _cloneRepo() throws GitAPIException {
@@ -137,6 +136,8 @@ public class BuildExecution {
 					_credentialsManager.getGithubUser(),
 					_credentialsManager.getGithubPassword()))
 			.call();
+
+		_build.addLog("Clonned Repo: " + _githubRepo);
 	}
 
 	private PullRequest _createPullRequest() throws IOException {
@@ -154,10 +155,11 @@ public class BuildExecution {
 		PullRequest pullRequest = new PullRequest();
 
 		pullRequest.setTitle(
-			_userName + " - Changes adding feature: " + _featureId);
+			_build.getUserName() + " - Changes adding feature: " +
+			_build.getFeatureId());
 		pullRequest.setBody(
-			"We are building feature: " + _featureId + " using the option " +
-			_devOptionId);
+			"We are building feature: " + _build.getFeatureId() +
+			" using the option " + _build.getDevOptionId());
 
 		PullRequestMarker base = new PullRequestMarker();
 
@@ -170,7 +172,17 @@ public class BuildExecution {
 
 		pullRequest.setHead(head);
 
-		return pullRequestService.createPullRequest(_getRepo(), pullRequest);
+		pullRequest = pullRequestService.createPullRequest(
+			_getRepo(), pullRequest);
+
+		_log.debug(
+			"Pull request successfully sent at: " + pullRequest.getHtmlUrl());
+
+		_build.addLog("Pull request sent: " + pullRequest.getNumber());
+		_build.setPullRequestURL(pullRequest.getHtmlUrl());
+		_build.setFinished(true);
+
+		return pullRequest;
 	}
 
 	private Repository _getRepo() {
@@ -198,6 +210,8 @@ public class BuildExecution {
 					_credentialsManager.getGithubUser(),
 					_credentialsManager.getGithubPassword()))
 			.call();
+
+		_build.addLog("Code pushed to Github");
 	}
 
 	private static final String _REF_PREFIX = "refs/heads/";
@@ -206,15 +220,13 @@ public class BuildExecution {
 		BuildExecution.class);
 
 	private String _branch;
+	private Build _build;
 	private CredentialsManager _credentialsManager;
 	private String _defaultBranch = "master";
-	private String _devOptionId;
 	private File _directory;
-	private String _featureId;
 	private Git _git;
 	private String _githubRepo;
 	private String _githubRepoCloneURL;
 	private File _patch;
-	private String _userName;
 
 }

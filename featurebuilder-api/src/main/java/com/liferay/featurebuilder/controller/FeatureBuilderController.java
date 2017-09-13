@@ -14,7 +14,9 @@
 
 package com.liferay.featurebuilder.controller;
 
+import com.liferay.featurebuilder.builder.BuildManager;
 import com.liferay.featurebuilder.builder.FeatureBuilder;
+import com.liferay.featurebuilder.model.Build;
 
 import java.io.IOException;
 
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,10 +63,33 @@ public class FeatureBuilderController {
 			"Processing build from " + userName + ". Feature: " + featureId +
 			" - Option: " + devOptionId);
 
-		String pullRequestURL = _featureBuilder.build(
-			userName, featureId, devOptionId);
+		Build build = new Build(userName, featureId, devOptionId);
 
-		return "redirect:" + pullRequestURL;
+		_buildManager.add(build);
+
+		Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				try {
+					_featureBuilder.build(build);
+				}
+				catch (Exception e) {
+					_log.error("Error building the feature", e);
+				}
+			}
+
+		});
+
+		thread.start();
+
+		return build.getBuildId();
+	}
+
+	@GetMapping("/{buildId}")
+	@ResponseBody
+	public Build pullRequestURL(@PathVariable String buildId) {
+		return _buildManager.get(buildId);
 	}
 
 	@GetMapping("/test")
@@ -74,6 +100,9 @@ public class FeatureBuilderController {
 
 	private static final Logger _log = LoggerFactory.getLogger(
 		FeatureBuilderController.class);
+
+	@Autowired
+	private BuildManager _buildManager;
 
 	@Autowired
 	private FeatureBuilder _featureBuilder;
