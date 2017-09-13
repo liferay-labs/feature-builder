@@ -2,7 +2,7 @@
   "name": "Feature Builder",
   "short_name": "Feature Builder",
   "start_url": "index.html",
-  "background_color": "#054d44",
-  "theme_color": "#054d44",
+  "background_color": "#27AE60",
+  "theme_color": "#27AE60",
   "display": "standalone"
 }
