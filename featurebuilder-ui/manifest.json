@@ -1,0 +1,8 @@
+{
+  "name": "Feature Builder",
+  "short_name": "Feature Builder",
+  "start_url": "index.html",
+  "background_color": "#054d44",
+  "theme_color": "#054d44",
+  "display": "standalone"
+}
