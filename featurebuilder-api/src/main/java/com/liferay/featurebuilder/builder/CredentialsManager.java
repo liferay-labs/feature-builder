@@ -14,23 +14,24 @@
 
 package com.liferay.featurebuilder.builder;
 
+import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Julio Camarero
  */
 @Service
 public class CredentialsManager {
+
 	public String getGithubPassword() {
 		String githubPassword = System.getenv("githubPassword");
 
 		if (Objects.isNull(githubPassword)) {
-			_log.error(
-				"Missing githubPassword environment variable");
+			_log.error("Missing githubPassword environment variable");
 		}
 
 		return githubPassword;
@@ -40,8 +41,7 @@ public class CredentialsManager {
 		String githubUser = System.getenv("githubUser");
 
 		if (Objects.isNull(githubUser)) {
-			_log.error(
-				"Missing githubUser environment variable");
+			_log.error("Missing githubUser environment variable");
 		}
 
 		return githubUser;
@@ -51,8 +51,7 @@ public class CredentialsManager {
 		String githubUserEmail = System.getenv("githubUserEmail");
 
 		if (Objects.isNull(githubUserEmail)) {
-			_log.error(
-				"Missing githubUserEmail environment variable");
+			_log.error("Missing githubUserEmail environment variable");
 		}
 
 		return githubUserEmail;
@@ -60,4 +59,5 @@ public class CredentialsManager {
 
 	private static final Logger _log = LoggerFactory.getLogger(
 		CredentialsManager.class);
+
 }

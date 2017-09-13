@@ -15,7 +15,11 @@
 package com.liferay.featurebuilder.controller;
 
 import com.liferay.featurebuilder.builder.FeatureBuilder;
+
+import java.io.IOException;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
-
 /**
  * API for building features in a github project.
  *
@@ -38,12 +40,6 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/build")
 public class FeatureBuilderController {
-
-	@GetMapping("/test")
-	@ResponseBody
-	public String test() {
-		return "hello";
-	}
 
 	/**
 	 * Builds a Feature for a project and creates a pull request with the
@@ -65,15 +61,21 @@ public class FeatureBuilderController {
 			" - Option: " + devOptionId);
 
 		String pullRequestURL = _featureBuilder.build(
-			userName, featureId, devOptionId);;
+			userName, featureId, devOptionId);
 
 		return "redirect:" + pullRequestURL;
 	}
 
-	@Autowired
-	private FeatureBuilder _featureBuilder;
+	@GetMapping("/test")
+	@ResponseBody
+	public String test() {
+		return "hello";
+	}
 
 	private static final Logger _log = LoggerFactory.getLogger(
 		FeatureBuilderController.class);
+
+	@Autowired
+	private FeatureBuilder _featureBuilder;
 
 }
