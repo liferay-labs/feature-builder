@@ -14,8 +14,9 @@
 
 package com.liferay.featurebuilder.controller;
 
+import com.liferay.featurebuilder.builder.BuildExecution;
 import com.liferay.featurebuilder.builder.BuildManager;
-import com.liferay.featurebuilder.builder.FeatureBuilder;
+import com.liferay.featurebuilder.builder.CredentialsManager;
 import com.liferay.featurebuilder.model.Build;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,21 +69,21 @@ public class FeatureBuilderController {
 
 		_buildManager.add(build);
 
-		Thread thread = new Thread(new Runnable() {
+		BuildExecution buildExecution = new BuildExecution(
+			build, _branchPrefix, _credentialsManager, _githubRepo,
+			_githubRepositoryCloneURL);
 
-			@Override
-			public void run() {
-				try {
-					_featureBuilder.build(build);
-				}
-				catch (Exception e) {
-					_log.error("Error building the feature", e);
-				}
-			}
+		Thread thread = new Thread(buildExecution);
 
-		});
-
-		thread.start();
+		try {
+			thread.start();
+		}
+		catch (Exception e) {
+			_log.error("Error building the feature", e);
+		}
+		finally {
+			buildExecution.cleanUp();
+		}
 
 		return build.getBuildId();
 	}
@@ -98,13 +100,22 @@ public class FeatureBuilderController {
 		return "hello";
 	}
 
+	@Value("${branch.prefix}")
+	private String _branchPrefix;
+
+	@Autowired
+	private CredentialsManager _credentialsManager;
+
+	@Value("${github.repository}")
+	private String _githubRepo;
+
+	@Value("${github.repository.clone.url}")
+	private String _githubRepositoryCloneURL;
+
 	private static final Logger _log = LoggerFactory.getLogger(
 		FeatureBuilderController.class);
 
 	@Autowired
 	private BuildManager _buildManager;
-
-	@Autowired
-	private FeatureBuilder _featureBuilder;
 
 }

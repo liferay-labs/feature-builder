@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
+import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
 
@@ -42,20 +44,34 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Julio Camarero
  */
-public class BuildExecution {
+public class BuildExecution implements Runnable {
 
 	public BuildExecution(
-		Build build, String branch, File directory, File patch,
+		Build build, String branchPrefix,
 		CredentialsManager credentialsManager, String githubRepo,
 		String githubRepoCloneURL) {
 
-		_branch = branch;
 		_build = build;
-		_directory = directory;
-		_patch = patch;
+		_patch = getPatch(build);
 		_credentialsManager = credentialsManager;
 		_githubRepo = githubRepo;
 		_githubRepoCloneURL = githubRepoCloneURL;
+
+		_random = new Random();
+
+		_branch = branchPrefix + "-" + build.getUserName() + "-" + _random.nextLong();
+
+		_directory = new File("/tmp/" + _branch + String.valueOf(_random.nextLong()));
+	}
+
+	private File getPatch(Build build) {
+		ClassLoader classLoader = getClass().getClassLoader();
+
+		String patchName = "change_button.patch";
+
+		URL resource = classLoader.getResource(patchName);
+
+		return new File(resource.getFile());
 	}
 
 	public void cleanUp() throws IOException {
@@ -66,16 +82,27 @@ public class BuildExecution {
 		}
 	}
 
-	public void execute() throws GitAPIException, IOException {
-		_cloneRepo();
+	public void run() {
+		try {
+			_cloneRepo();
 
-		_checkoutNewBranch();
+			_checkoutNewBranch();
 
-		_applyPatch();
+			_applyPatch();
 
-		_push();
+			_push();
 
-		_createPullRequest();
+			_createPullRequest();
+		}
+		catch (GitAPIException gae) {
+			_log.error("Exception from Git Client.", gae);
+		}
+		catch (FileNotFoundException fnfe) {
+			_log.error("Unable to find a File.", fnfe);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void setDefaultBranch(String defaultBranch) {
@@ -228,5 +255,7 @@ public class BuildExecution {
 	private String _githubRepo;
 	private String _githubRepoCloneURL;
 	private File _patch;
+	private Random _random;
+
 
 }
