@@ -28,6 +28,59 @@ $(".previous").click(function(){
     previous_fs.show();
 });
 
-$(".submit").click(function(){
-    return false;
+$('#msform').submit(function(e){
+    //de-activate current step on progressbar
+
+    console.log("Sending data");
+
+    e.preventDefault();
+
+    $.ajax({
+        type: "POST",
+        async: true,
+        url: 'https://api-featurebuilder.wedeploy.io/build',
+        data:$('#msform').serialize(),
+        success: function (buildId)
+        {
+            console.log("SUCESS " + buildId)
+
+            var fieldsets = document.getElementsByTagName('fieldset');
+
+            for(var i=0; i<fieldsets.length; i++){
+                if(fieldsets[i].id != "logs"){
+                    fieldsets[i].style.display="none";
+                }
+            }
+
+            var textarea = document.getElementById("logs");
+            textarea.style.display="block";
+
+            textarea.value = "Creating pull request ";
+
+            poll(buildId, 10000, 500);
+
+        },
+        error: function (msg)
+        { console.log("ERROR " + msg.responseText)}
+    });
 })
+
+function poll(buildId, timeout, interval) {
+    var endTime = Number(new Date()) + (timeout || 2000);
+    interval = interval || 100;
+
+    fetch("https://api-featurebuilder.wedeploy.io/build/" + buildId, {method: 'get'})
+        .then(response => response.json())
+        .then(data => {
+            var textareas = document.getElementsByTagName("textarea");
+            textareas[0].value = "Creating pull request " + data.logs.join("\n");
+            if (data.finished) {
+                console.log("FINISHED!!");
+            } else if (Number(new Date()) < endTime) {
+                setTimeout(() => {
+                    poll(buildId, timeout, interval);
+                }, interval);
+            }
+        })
+        .catch(error => { console.log("ERROR " + error) });
+}
