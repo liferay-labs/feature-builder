@@ -59,6 +59,8 @@ public class BuildExecution implements Runnable {
 		_credentialsManager = credentialsManager;
 		_githubRepo = githubRepo;
 		_githubRepoCloneURL = githubRepoCloneURL;
+
+		_build.addLog("Execution waiting in Queue.");
 	}
 
 	public void run() {
@@ -237,6 +239,8 @@ public class BuildExecution implements Runnable {
 	}
 
 	private void _initialize() {
+		_build.addLog("Starting execution...");
+
 		_random = new Random();
 
 		_patch = _getPatch(_build);
