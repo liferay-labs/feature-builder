@@ -1,11 +1,11 @@
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
- * <p>
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * <p>
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
@@ -22,7 +22,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import java.net.URL;
+
+import java.text.Normalizer;
+
 import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
@@ -47,43 +51,20 @@ import org.slf4j.LoggerFactory;
 public class BuildExecution implements Runnable {
 
 	public BuildExecution(
-		Build build, String branchPrefix,
-		CredentialsManager credentialsManager, String githubRepo,
-		String githubRepoCloneURL) {
+		Build build, String branchPrefix, CredentialsManager credentialsManager,
+		String githubRepo, String githubRepoCloneURL) {
 
 		_build = build;
-		_patch = getPatch(build);
+		_branchPrefix = branchPrefix;
 		_credentialsManager = credentialsManager;
 		_githubRepo = githubRepo;
 		_githubRepoCloneURL = githubRepoCloneURL;
-
-		_random = new Random();
-
-		_branch = branchPrefix + "-" + build.getUserName() + "-" + _random.nextLong();
-
-		_directory = new File("/tmp/" + _branch + String.valueOf(_random.nextLong()));
-	}
-
-	private File getPatch(Build build) {
-		ClassLoader classLoader = getClass().getClassLoader();
-
-		String patchName = "change_button.patch";
-
-		URL resource = classLoader.getResource(patchName);
-
-		return new File(resource.getFile());
-	}
-
-	public void cleanUp() throws IOException {
-		FileUtils.deleteDirectory(_directory);
-
-		if (_git != null) {
-			_git.close();
-		}
 	}
 
 	public void run() {
 		try {
+			_initialize();
+
 			_cloneRepo();
 
 			_checkoutNewBranch();
@@ -94,14 +75,22 @@ public class BuildExecution implements Runnable {
 
 			_createPullRequest();
 		}
-		catch (GitAPIException gae) {
-			_log.error("Exception from Git Client.", gae);
+		catch (GitAPIException gapie) {
+			_log.error("Exception from Git Client.", gapie);
 		}
 		catch (FileNotFoundException fnfe) {
 			_log.error("Unable to find a File.", fnfe);
 		}
-		catch (IOException e) {
-			e.printStackTrace();
+		catch (IOException ioe) {
+			_log.error("Unable to write to a File.", ioe);
+		}
+		finally {
+			try {
+				_cleanUp();
+			}
+			catch (IOException ioe) {
+				_log.error("Unable to clean up after execution.", ioe);
+			}
 		}
 	}
 
@@ -127,12 +116,12 @@ public class BuildExecution implements Runnable {
 				_credentialsManager.getGithubUserEmail())
 			.setMessage(
 				"Adding Feature " + _build.getFeatureId() + " - Option: " +
-				_build.getDevOptionId())
+					_build.getDevOptionId())
 			.call();
 
 		_build.addLog(
 			"Developed Feature: " + _build.getFeatureId() + " - Option: " +
-			_build.getDevOptionId());
+				_build.getDevOptionId());
 	}
 
 	private void _checkoutNewBranch() throws GitAPIException {
@@ -144,6 +133,14 @@ public class BuildExecution implements Runnable {
 			.call();
 
 		_build.addLog("Checked Branch: " + _branch);
+	}
+
+	private void _cleanUp() throws IOException {
+		FileUtils.deleteDirectory(_directory);
+
+		if (_git != null) {
+			_git.close();
+		}
 	}
 
 	private void _cloneRepo() throws GitAPIException {
@@ -172,9 +169,9 @@ public class BuildExecution implements Runnable {
 
 		GitHubClient gitHubClient = new GitHubClient();
 
-			gitHubClient.setCredentials(
-				_credentialsManager.getGithubUser(),
-				_credentialsManager.getGithubPassword());
+		gitHubClient.setCredentials(
+			_credentialsManager.getGithubUser(),
+			_credentialsManager.getGithubPassword());
 
 		PullRequestService pullRequestService = new PullRequestService(
 			gitHubClient);
@@ -183,10 +180,10 @@ public class BuildExecution implements Runnable {
 
 		pullRequest.setTitle(
 			_build.getUserName() + " - Changes adding feature: " +
-			_build.getFeatureId());
+				_build.getFeatureId());
 		pullRequest.setBody(
 			"We are building feature: " + _build.getFeatureId() +
-			" using the option " + _build.getDevOptionId());
+				" using the option " + _build.getDevOptionId());
 
 		PullRequestMarker base = new PullRequestMarker();
 
@@ -207,9 +204,20 @@ public class BuildExecution implements Runnable {
 
 		_build.addLog("Pull request sent: " + pullRequest.getNumber());
 		_build.setPullRequestURL(pullRequest.getHtmlUrl());
+
 		_build.setFinished(true);
 
 		return pullRequest;
+	}
+
+	private File _getPatch(Build build) {
+		ClassLoader classLoader = getClass().getClassLoader();
+
+		String patchName = "change_button.patch";
+
+		URL resource = classLoader.getResource(patchName);
+
+		return new File(resource.getFile());
 	}
 
 	private Repository _getRepo() {
@@ -222,9 +230,33 @@ public class BuildExecution implements Runnable {
 		user.setLogin(repoNameParts[0]);
 
 		repo.setOwner(user);
+
 		repo.setName(repoNameParts[1]);
 
 		return repo;
+	}
+
+	private void _initialize() {
+		_random = new Random();
+
+		_patch = _getPatch(_build);
+
+		// Remove non ascii characters
+
+		String normalizedUserName =
+		Normalizer
+			.normalize(_build.getUserName(), Normalizer.Form.NFD)
+			.replaceAll("[^\\p{ASCII}]", "");
+
+		// Remove whitespaces
+
+		normalizedUserName = normalizedUserName.replaceAll("\\s+", "");
+
+		_branch =
+			_branchPrefix + "-" + normalizedUserName + "-" + _random.nextLong();
+
+		_directory = new File(
+			"/tmp/" + _branch + String.valueOf(_random.nextLong()));
 	}
 
 	private void _push() throws GitAPIException {
@@ -247,6 +279,7 @@ public class BuildExecution implements Runnable {
 		BuildExecution.class);
 
 	private String _branch;
+	private String _branchPrefix;
 	private Build _build;
 	private CredentialsManager _credentialsManager;
 	private String _defaultBranch = "master";
@@ -256,6 +289,5 @@ public class BuildExecution implements Runnable {
 	private String _githubRepoCloneURL;
 	private File _patch;
 	private Random _random;
-
 
 }
