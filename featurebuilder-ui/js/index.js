@@ -76,6 +76,17 @@ function poll(buildId, timeout, interval) {
             textareas[0].value = "Creating pull request " + data.logs.join("\n");
             if (data.finished) {
                 console.log("FINISHED!!");
+
+                document.getElementById("logs").style.display="none";
+
+                var links = document.getElementById("link");
+                links.style.display="block";
+
+                var pullLink = document.getElementById("pullLink");
+
+                pullLink.href = data.pullRequestURL
+                pullLink.text = "Check your pull in Github"
+
             } else if (Number(new Date()) < endTime) {
                 setTimeout(() => {
                     poll(buildId, timeout, interval);
