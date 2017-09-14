@@ -34,20 +34,20 @@ import org.springframework.stereotype.Service;
 public class BuildManager {
 
 	public void add(Build build) {
-		builds.put(build.getBuildId(), build);
+		_builds.put(build.getBuildId(), build);
 	}
 
 	public Build get(String buildId) {
-		if (!builds.containsKey(buildId)) {
+		if (!_builds.containsKey(buildId)) {
 			_log.debug("Request for non existing build: " + buildId);
 
 			return null;
 		}
 
-		Build build = builds.get(buildId);
+		Build build = _builds.get(buildId);
 
 		if (build.isFinished()) {
-			builds.remove(buildId);
+			_builds.remove(buildId);
 		}
 
 		return build;
@@ -56,6 +56,6 @@ public class BuildManager {
 	private static final Logger _log = LoggerFactory.getLogger(
 		BuildManager.class);
 
-	private Map<String, Build> builds = new HashMap<>();
+	private Map<String, Build> _builds = new HashMap<>();
 
 }
