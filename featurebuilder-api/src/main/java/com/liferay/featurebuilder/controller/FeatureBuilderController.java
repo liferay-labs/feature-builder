@@ -21,6 +21,11 @@ import com.liferay.featurebuilder.model.Build;
 
 import java.io.IOException;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.annotation.PostConstruct;
+
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import org.slf4j.Logger;
@@ -59,13 +64,14 @@ public class FeatureBuilderController {
 	@ResponseBody
 	@CrossOrigin
 	public String build(
-		@RequestParam(required = false, defaultValue = "pepe") String userName,
-		@RequestParam String featureId,
-		@RequestParam String devOptionId) throws GitAPIException, IOException {
+			@RequestParam(defaultValue = "pepe", required = false)
+				String userName,
+			@RequestParam String featureId, @RequestParam String devOptionId)
+		throws GitAPIException, IOException {
 
 		_log.debug(
 			"Processing build from " + userName + ". Feature: " + featureId +
-			" - Option: " + devOptionId);
+				" - Option: " + devOptionId);
 
 		Build build = new Build(userName, featureId, devOptionId);
 
@@ -75,17 +81,7 @@ public class FeatureBuilderController {
 			build, _branchPrefix, _credentialsManager, _githubRepo,
 			_githubRepositoryCloneURL);
 
-		Thread thread = new Thread(buildExecution);
-
-		try {
-			thread.start();
-		}
-		catch (Exception e) {
-			_log.error("Error building the feature", e);
-		}
-		finally {
-			buildExecution.cleanUp();
-		}
+		_executorService.submit(buildExecution);
 
 		return build.getBuildId();
 	}
@@ -103,22 +99,34 @@ public class FeatureBuilderController {
 		return "hello";
 	}
 
+	@PostConstruct
+	private void initializeExecutorService() {
+		int processors = Runtime.getRuntime().availableProcessors();
+		_log.debug(
+			"Initializing Executor Service with a Thred Pool of " + processors +
+				" Thread Workers.");
+
+		_executorService = Executors.newFixedThreadPool(processors);
+	}
+
+	private static final Logger _log = LoggerFactory.getLogger(
+		FeatureBuilderController.class);
+
 	@Value("${branch.prefix}")
 	private String _branchPrefix;
 
 	@Autowired
+	private BuildManager _buildManager;
+
+	@Autowired
 	private CredentialsManager _credentialsManager;
+
+	private ExecutorService _executorService;
 
 	@Value("${github.repository}")
 	private String _githubRepo;
 
 	@Value("${github.repository.clone.url}")
 	private String _githubRepositoryCloneURL;
-
-	private static final Logger _log = LoggerFactory.getLogger(
-		FeatureBuilderController.class);
-
-	@Autowired
-	private BuildManager _buildManager;
 
 }
