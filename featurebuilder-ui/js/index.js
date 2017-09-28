@@ -34,7 +34,7 @@ $(".next").click(function(){
         else if(document.getElementById("slay").checked) {
             console.log("Implementing Slay feature");
 
-            add("Implement the feature", "Choose the button label", next_fs[0], ["Hug", "Kiss", "Slay"]);
+            add("Implement the feature", "Choose the button label", next_fs[0], ["Hug", "Kiss", "Kill"]);
 
             next_fs.show();
 
