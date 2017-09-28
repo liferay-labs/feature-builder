@@ -78,15 +78,23 @@ public class BuildExecution implements Runnable {
 			_createPullRequest();
 		}
 		catch (GitAPIException gapie) {
+			_build.addLog("Error - Exception from Git Client.");
+
 			_log.error("Exception from Git Client.", gapie);
 		}
 		catch (FileNotFoundException fnfe) {
+			_build.addLog("Error - Exception trying to read patch file.");
+
 			_log.error("Unable to find a File.", fnfe);
 		}
 		catch (IOException ioe) {
+			_build.addLog("Error - Exception trying to write a file.");
+
 			_log.error("Unable to write to a File.", ioe);
 		}
 		finally {
+			_build.setFinished(true);
+
 			try {
 				_cleanUp();
 			}
@@ -207,8 +215,6 @@ public class BuildExecution implements Runnable {
 		_build.addLog("Pull request sent: " + pullRequest.getNumber());
 		_build.setPullRequestURL(pullRequest.getHtmlUrl());
 
-		_build.setFinished(true);
-
 		return pullRequest;
 	}
 
@@ -248,9 +254,9 @@ public class BuildExecution implements Runnable {
 		// Remove non ascii characters
 
 		String normalizedUserName =
-		Normalizer
-			.normalize(_build.getUserName(), Normalizer.Form.NFD)
-			.replaceAll("[^\\p{ASCII}]", "");
+			Normalizer
+				.normalize(_build.getUserName(), Normalizer.Form.NFD)
+				.replaceAll("[^\\p{ASCII}]", "");
 
 		// Remove whitespaces
 
