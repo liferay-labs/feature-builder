@@ -221,9 +221,15 @@ public class BuildExecution implements Runnable {
 	private File _getPatch(Build build) {
 		ClassLoader classLoader = getClass().getClassLoader();
 
-		String patchName = "change_button.patch";
+		StringBuilder sb = new StringBuilder();
 
-		URL resource = classLoader.getResource(patchName);
+		sb.append("feature-");
+		sb.append(build.getFeatureId());
+		sb.append("-option-");
+		sb.append(build.getDevOptionId());
+		sb.append(".patch");
+
+		URL resource = classLoader.getResource(sb.toString());
 
 		return new File(resource.getFile());
 	}
