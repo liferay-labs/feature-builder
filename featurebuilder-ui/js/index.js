@@ -117,9 +117,15 @@ function poll(buildId, timeout, interval) {
     fetch("https://api-featurebuilder.wedeploy.io/build/" + buildId, {method: 'get'})
         .then(response => response.json())
         .then(data => {
+
+            console.log("LOG " + data.logs);
+
             var textareas = document.getElementsByTagName("textarea");
+
             textareas[0].value = "Creating pull request " + data.logs.join("\n");
+
             if (data.finished) {
+
                 console.log("FINISHED!!");
 
                 document.getElementById("logs").style.display="none";
@@ -192,8 +198,6 @@ function add(title, subtitle, parent, options) {
     var cont = 1;
 
     options.forEach(function(element) {
-        console.log(element);
-
         var radio = document.createElement('input');
         radio.value=cont;
         radio.id="devOptionId" + cont;
