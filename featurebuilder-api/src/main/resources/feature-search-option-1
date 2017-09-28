@@ -1,0 +1,67 @@
+diff --git a/game-functional-test/src/testIntegration/resources/features/character_search.feature b/game-functional-test/src/testIntegration/resources/features/character_search.feature
+index 23f6647..f1e66a2 100644
+--- a/game-functional-test/src/testIntegration/resources/features/character_search.feature
++++ b/game-functional-test/src/testIntegration/resources/features/character_search.feature
+@@ -4,19 +4,19 @@ Feature: Search of Characters
+ 
+     Scenario: Search a character by name (Arya)
+ 
+-        #Given a character called Arya Stark exists
+-        #When I search for Arya
+-        #Then I see Arya Stark in the list of characters
++        Given a character called Arya Stark exists
++        When I search for Arya
++        Then I see Arya Stark in the list of characters
+ 
+     Scenario: Search a character by family name (Arya)
+ 
+-        #Given a character called Arya Stark exists
+-        #When I search for Stark
+-        #Then I see Arya Stark in the list of characters
++        Given a character called Arya Stark exists
++        When I search for Stark
++        Then I see Arya Stark in the list of characters
+ 
+     Scenario: Search a character by status (Alive)
+ 
+-        #Given a character called Arya Stark exists
+-        #When I search for ALIVE
+-        #Then I see Arya Stark in the list of characters
++        Given a character called Arya Stark exists
++        When I search for ALIVE
++        Then I see Arya Stark in the list of characters
+         
+\ No newline at end of file
+diff --git a/game-web/src/main/resources/META-INF/resources/view.jsp b/game-web/src/main/resources/META-INF/resources/view.jsp
+index 8bc6400..b1acd89 100644
+--- a/game-web/src/main/resources/META-INF/resources/view.jsp
++++ b/game-web/src/main/resources/META-INF/resources/view.jsp
+@@ -26,6 +26,14 @@ PortletURL portletURL = renderResponse.createRenderURL();
+ 	<aui:nav cssClass="navbar-nav">
+ 		<aui:nav-item href="<%= mainURL.toString() %>" label="characters" selected="<%= true %>" />
+ 	</aui:nav>
++
++	<aui:nav-bar-search>
++		<aui:form action="<%= portletURL.toString() %>" name="searchFm">
++			<aui:nav-bar-search>
++				<liferay-ui:input-search markupView="lexicon" name="box" />
++			</aui:nav-bar-search>
++		</aui:form>
++	</aui:nav-bar-search>
+ </aui:nav-bar>
+ 
+ <liferay-frontend:management-bar
+@@ -164,6 +172,13 @@ PortletURL portletURL = renderResponse.createRenderURL();
+ 	</aui:form>
+ </div>
+ 
++<liferay-frontend:add-menu>
++	<liferay-frontend:add-menu-item
++		title='<%= LanguageUtil.get(request, "add-new-character") %>'
++		url="<%= gameDisplayContext.getEditURL().toString() %>"
++	/>
++</liferay-frontend:add-menu>
++
+ <aui:script sandbox="<%= true %>">
+ 	$('#<portlet:namespace />deleteCharacters').on(
+ 		'click',

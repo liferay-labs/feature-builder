@@ -1,0 +1,101 @@
+diff --git a/game-functional-test/src/testIntegration/resources/features/character_slay.feature b/game-functional-test/src/testIntegration/resources/features/character_slay.feature
+index 8718e48..613d585 100644
+--- a/game-functional-test/src/testIntegration/resources/features/character_slay.feature
++++ b/game-functional-test/src/testIntegration/resources/features/character_slay.feature
+@@ -5,13 +5,13 @@ Feature: Slay of Characters
+ 
+     Scenario: Slaying a Character (Jon)
+ 
+-        #Given a character called Jon Snow exists
+-        #And Jon Snow is ALIVE
+-        #When I slay Jon Snow
+-        #Then Jon Snow is DEAD
++        Given a character called Jon Snow exists
++        And Jon Snow is ALIVE
++        When I slay Jon Snow
++        Then Jon Snow is DEAD
+ 
+     Scenario: Slaying a dead character
+ 
+-        #Given Jon Snow is DEAD
+-        #When I try to slay Jon Snow
+-        #Then I can't slay Jon Snow
+\ No newline at end of file
++        Given Jon Snow is DEAD
++        When I try to slay Jon Snow
++        Then I can't slay Jon Snow
+\ No newline at end of file
+diff --git a/game-web/src/main/resources/META-INF/resources/character_action.jsp b/game-web/src/main/resources/META-INF/resources/character_action.jsp
+index 03ef9df..5e35119 100644
+--- a/game-web/src/main/resources/META-INF/resources/character_action.jsp
++++ b/game-web/src/main/resources/META-INF/resources/character_action.jsp
+@@ -34,6 +34,32 @@ Character character = (Character)row.getObject();
+ 		url="<%= editCharacterURL %>"
+ 	/>
+ 
++	<c:if test="<%= Objects.equals(character.getStatus(), CharacterStatus.DEAD.toString()) %>">
++		<portlet:actionURL name="/game/edit_character" var="reviveCharacterURL">
++			<portlet:param name="<%= Constants.CMD %>" value="<%= GameWebKeys.REVIVE_CHARACTER %>" />
++			<portlet:param name="redirect" value="<%= currentURL %>" />
++			<portlet:param name="characterId" value="<%= String.valueOf(character.getCharacterId()) %>" />
++		</portlet:actionURL>
++
++		<liferay-ui:icon
++			message="revive"
++			url="<%= reviveCharacterURL %>"
++		/>
++	</c:if>
++
++	<c:if test="<%= Objects.equals(character.getStatus(), CharacterStatus.ALIVE.toString()) %>">
++		<portlet:actionURL name="/game/edit_character" var="killCharacterURL">
++			<portlet:param name="<%= Constants.CMD %>" value="<%= GameWebKeys.KILL_CHARACTER %>" />
++			<portlet:param name="redirect" value="<%= currentURL %>" />
++			<portlet:param name="characterId" value="<%= String.valueOf(character.getCharacterId()) %>" />
++		</portlet:actionURL>
++
++		<liferay-ui:icon
++			message="Kiss"
++			url="<%= killCharacterURL %>"
++		/>
++	</c:if>
++
+ 	<portlet:actionURL name="/game/edit_character" var="deleteCharacterURL">
+ 		<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.DELETE %>" />
+ 		<portlet:param name="redirect" value="<%= currentURL %>" />
+diff --git a/game-web/src/main/resources/META-INF/resources/view.jsp b/game-web/src/main/resources/META-INF/resources/view.jsp
+index 8bc6400..de9a613 100644
+--- a/game-web/src/main/resources/META-INF/resources/view.jsp
++++ b/game-web/src/main/resources/META-INF/resources/view.jsp
+@@ -47,6 +47,8 @@ PortletURL portletURL = renderResponse.createRenderURL();
+ 	</liferay-frontend:management-bar-filters>
+ 
+ 	<liferay-frontend:management-bar-action-buttons>
++		<liferay-frontend:management-bar-button href="javascript:;" icon="cut" id="killCharacters" label="Kiss" />
++		<liferay-frontend:management-bar-button href="javascript:;" icon="magic" id="reviveCharacters" label="revive" />
+ 		<liferay-frontend:management-bar-button href="javascript:;" icon="trash" id="deleteCharacters" label="delete" />
+ 	</liferay-frontend:management-bar-action-buttons>
+ 
+@@ -175,4 +177,22 @@ PortletURL portletURL = renderResponse.createRenderURL();
+ 			}
+ 		}
+ 	);
++
++	$('#<portlet:namespace />killCharacters').on(
++		'click',
++		function() {
++			document.<portlet:namespace />fm.<portlet:namespace /><%= Constants.CMD %>.value = '<%= GameWebKeys.KILL_CHARACTER %>';
++
++			submitForm($(document.<portlet:namespace />fm));
++		}
++	);
++
++	$('#<portlet:namespace />reviveCharacters').on(
++		'click',
++		function() {
++			document.<portlet:namespace />fm.<portlet:namespace /><%= Constants.CMD %>.value = '<%= GameWebKeys.REVIVE_CHARACTER %>';
++
++			submitForm($(document.<portlet:namespace />fm));
++		}
++	);
+ </aui:script>
+\ No newline at end of file

@@ -1,0 +1,46 @@
+diff --git a/game-functional-test/src/testIntegration/resources/features/character_creation.feature b/game-functional-test/src/testIntegration/resources/features/character_creation.feature
+index c79f48e..b2626b8 100644
+--- a/game-functional-test/src/testIntegration/resources/features/character_creation.feature
++++ b/game-functional-test/src/testIntegration/resources/features/character_creation.feature
+@@ -4,14 +4,14 @@ Feature: Creation of Characters
+ 
+     Scenario: Adding a new Character (Arya)
+ 
+-        #Given I am in the list of characters
+-        #And Arya Stark doesn't exist
+-        #When I add a new character called Arya Stark
+-        #Then I see Arya Stark in the list of characters
++        Given I am in the list of characters
++        And Arya Stark doesn't exist
++        When I add a new character called Arya Stark
++        Then I see Arya Stark in the list of characters
+ 
+     Scenario: Adding a new Character without a name
+ 
+-        #Given I am in the list of characters
+-        #When I add a new character without a name
++        Given I am in the list of characters
++        When I add a new character without a name
+         #Then a girl has no name
+-        #Then I can't save the character
+\ No newline at end of file
++        Then I can't save the character
+\ No newline at end of file
+diff --git a/game-web/src/main/resources/META-INF/resources/view.jsp b/game-web/src/main/resources/META-INF/resources/view.jsp
+index 8bc6400..701ed36 100644
+--- a/game-web/src/main/resources/META-INF/resources/view.jsp
++++ b/game-web/src/main/resources/META-INF/resources/view.jsp
+@@ -164,6 +164,13 @@ PortletURL portletURL = renderResponse.createRenderURL();
+ 	</aui:form>
+ </div>
+ 
++<liferay-frontend:add-menu>
++	<liferay-frontend:add-menu-item
++		title='<%= LanguageUtil.get(request, "add-new-character") %>'
++		url="<%= gameDisplayContext.getEditURL().toString() %>"
++	/>
++</liferay-frontend:add-menu>
++
+ <aui:script sandbox="<%= true %>">
+ 	$('#<portlet:namespace />deleteCharacters').on(
+ 		'click',
