@@ -76,36 +76,34 @@ public class BuildExecution implements Runnable {
 			_push();
 
 			_createPullRequest();
-
-			_status = "OK";
 		}
 		catch (GitAPIException gapie) {
 			_build.addLog("Error - Exception from Git Client.");
 
 			_log.error("Exception from Git Client.", gapie);
 
-			_status = "The job can't be executed: Exception from Git Client.";
+			_build.setFinishStatus("The job can't be executed: Exception from Git Client.");
 		}
 		catch (FileNotFoundException fnfe) {
 			_build.addLog("Error - Exception trying to read patch file.");
 
 			_log.error("Unable to find a File.", fnfe);
 
-			_status = "The job can't be executed: Unable to find a File.";
+			_build.setFinishStatus("The job can't be executed: Unable to find a File.");
 		}
 		catch (IOException ioe) {
 			_build.addLog("Error - Exception trying to write a file.");
 
 			_log.error("Unable to write to a File.", ioe);
 
-			_status = "The job can't be executed: Unable to write to a File.";
+			_build.setFinishStatus("The job can't be executed: Unable to write to a File.");
 		}
 		catch (Exception e) {
 			_build.addLog("System Error");
 
 			_log.error("System Error.", e);
 
-			_status = "The job can't be executed: System Error.";
+			_build.setFinishStatus("The job can't be executed: System Error.");
 		}
 		finally {
 			_build.setFinished(true);
@@ -324,6 +322,5 @@ public class BuildExecution implements Runnable {
 	private String _githubRepoCloneURL;
 	private File _patch;
 	private Random _random;
-	private String _status;
 
 }

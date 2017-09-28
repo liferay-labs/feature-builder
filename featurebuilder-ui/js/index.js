@@ -128,6 +128,8 @@ function poll(buildId, timeout, interval) {
 
                 console.log("FINISHED!!");
 
+                console.log("FINISHED!!" + data.finishStatus);
+
                 document.getElementById("logs").style.display="none";
 
                 var links = document.getElementById("link");

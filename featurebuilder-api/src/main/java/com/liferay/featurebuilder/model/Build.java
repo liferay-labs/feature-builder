@@ -29,6 +29,7 @@ public class Build {
 		_featureId = featureId;
 		_devOptionId = devOptionId;
 		_logs = new ArrayList<>();
+		_finishStatus = "OK";
 
 		_buildId = UUID.randomUUID().toString();
 	}
@@ -69,6 +70,14 @@ public class Build {
 		_finished = finished;
 	}
 
+	public String getFinishStatus() {
+		return _finishStatus;
+	}
+
+	public void setFinishStatus(String finishStatus) {
+		_finishStatus = finishStatus;
+	}
+
 	public void setPullRequestURL(String pullRequestURL) {
 		_pullRequestURL = pullRequestURL;
 	}
@@ -80,5 +89,6 @@ public class Build {
 	private List<String> _logs;
 	private String _pullRequestURL;
 	private String _userName;
+	private String _finishStatus;
 
 }
