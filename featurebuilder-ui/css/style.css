@@ -84,11 +84,9 @@ button {
 
 label {
 	display: block;
-	margin-bottom: 8px;
 }
 
 label.light {
-	font-weight: 300;
 	display: inline;
 }
 
@@ -115,7 +113,6 @@ label.light {
 }
 
 form {
-	max-width: 300px;
 	margin: 10px auto;
 	padding: 10px 20px;
 	border-radius: 8px;
@@ -239,6 +236,14 @@ label {
 	transition: all .15s ease;
 }
 
+.line {
+	display: block;
+	padding: 1rem 1rem 1rem 3rem;
+	position: relative;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	background: white;
+}
+
 label:first-of-type {
 	border: 0;
 }
@@ -277,6 +282,10 @@ input:disabled + label:hover {
 input:disabled + label:before {
 	border-color: white;
 	background: white;
+}
+
+.popover-content img {
+	width: 250px;
 }
 
 
