@@ -44,13 +44,7 @@ public class BuildManager {
 			return null;
 		}
 
-		Build build = _builds.get(buildId);
-
-		if (build.isFinished()) {
-			_builds.remove(buildId);
-		}
-
-		return build;
+		return _builds.get(buildId);
 	}
 
 	private static final Logger _log = LoggerFactory.getLogger(
