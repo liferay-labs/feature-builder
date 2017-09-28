@@ -220,8 +220,6 @@ input[type=radio] {
 }
 
 label {
-	font-size: 1rem;
-	font-weight: bold;
 	line-height: 1;
 	cursor: pointer;
 	display: block;
