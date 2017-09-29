@@ -1,3 +1,44 @@
+From b08c8b2b8d57d7c5be84f9ac4ba8ae9ffeaae8f1 Mon Sep 17 00:00:00 2001
+From: Julio Camarero <julio.camarero@liferay.com>
+Date: Thu, 28 Sep 2017 16:34:13 +0200
+Subject: [PATCH 1/3] Add Search Bar
+
+---
+ game-web/src/main/resources/META-INF/resources/view.jsp | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/game-web/src/main/resources/META-INF/resources/view.jsp b/game-web/src/main/resources/META-INF/resources/view.jsp
+index 8bc6400..6bee572 100644
+--- a/game-web/src/main/resources/META-INF/resources/view.jsp
++++ b/game-web/src/main/resources/META-INF/resources/view.jsp
+@@ -26,6 +26,14 @@ PortletURL portletURL = renderResponse.createRenderURL();
+ 	<aui:nav cssClass="navbar-nav">
+ 		<aui:nav-item href="<%= mainURL.toString() %>" label="characters" selected="<%= true %>" />
+ 	</aui:nav>
++
++	<aui:nav-bar-search>
++		<aui:form action="<%= portletURL.toString() %>" name="searchFm">
++			<aui:nav-bar-search>
++				<liferay-ui:input-search markupView="lexicon" name="whatever" />
++			</aui:nav-bar-search>
++		</aui:form>
++	</aui:nav-bar-search>
+ </aui:nav-bar>
+ 
+ <liferay-frontend:management-bar
+-- 
+2.11.0 (Apple Git-81)
+
+
+From fbc580e61f3878820600454514038cb7255b08cf Mon Sep 17 00:00:00 2001
+From: Julio Camarero <julio.camarero@liferay.com>
+Date: Thu, 28 Sep 2017 16:34:25 +0200
+Subject: [PATCH 2/3] Enable tests for search of characters
+
+---
+ .../resources/features/character_search.feature        | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
 diff --git a/game-functional-test/src/testIntegration/resources/features/character_search.feature b/game-functional-test/src/testIntegration/resources/features/character_search.feature
 index 23f6647..f1e66a2 100644
 --- a/game-functional-test/src/testIntegration/resources/features/character_search.feature
@@ -32,26 +73,24 @@ index 23f6647..f1e66a2 100644
 +        Then I see Arya Stark in the list of characters
          
 \ No newline at end of file
+-- 
+2.11.0 (Apple Git-81)
+
+
+From a22828912d4c0c87a1fd8a2a001cfe51d2570309 Mon Sep 17 00:00:00 2001
+From: Julio Camarero <julio.camarero@liferay.com>
+Date: Thu, 28 Sep 2017 16:20:17 +0200
+Subject: [PATCH 3/3] Add Button to add character (we need this for the tests)
+
+---
+ game-web/src/main/resources/META-INF/resources/view.jsp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
 diff --git a/game-web/src/main/resources/META-INF/resources/view.jsp b/game-web/src/main/resources/META-INF/resources/view.jsp
-index 8bc6400..3a0b8fe 100644
+index 6bee572..3a0b8fe 100644
 --- a/game-web/src/main/resources/META-INF/resources/view.jsp
 +++ b/game-web/src/main/resources/META-INF/resources/view.jsp
-@@ -26,6 +26,14 @@ PortletURL portletURL = renderResponse.createRenderURL();
- 	<aui:nav cssClass="navbar-nav">
- 		<aui:nav-item href="<%= mainURL.toString() %>" label="characters" selected="<%= true %>" />
- 	</aui:nav>
-+
-+	<aui:nav-bar-search>
-+		<aui:form action="<%= portletURL.toString() %>" name="searchFm">
-+			<aui:nav-bar-search>
-+				<liferay-ui:input-search markupView="lexicon" name="whatever" />
-+			</aui:nav-bar-search>
-+		</aui:form>
-+	</aui:nav-bar-search>
- </aui:nav-bar>
- 
- <liferay-frontend:management-bar
-@@ -164,6 +172,13 @@ PortletURL portletURL = renderResponse.createRenderURL();
+@@ -172,6 +172,13 @@ PortletURL portletURL = renderResponse.createRenderURL();
  	</aui:form>
  </div>
  
@@ -65,3 +104,6 @@ index 8bc6400..3a0b8fe 100644
  <aui:script sandbox="<%= true %>">
  	$('#<portlet:namespace />deleteCharacters').on(
  		'click',
+-- 
+2.11.0 (Apple Git-81)
+

@@ -50,6 +50,10 @@ public class Build {
 		return _featureId;
 	}
 
+	public String getFinishStatus() {
+		return _finishStatus;
+	}
+
 	public List<String> getLogs() {
 		return _logs;
 	}
@@ -70,10 +74,6 @@ public class Build {
 		_finished = finished;
 	}
 
-	public String getFinishStatus() {
-		return _finishStatus;
-	}
-
 	public void setFinishStatus(String finishStatus) {
 		_finishStatus = finishStatus;
 	}
@@ -86,9 +86,9 @@ public class Build {
 	private String _devOptionId;
 	private String _featureId;
 	private boolean _finished = false;
+	private String _finishStatus;
 	private List<String> _logs;
 	private String _pullRequestURL;
 	private String _userName;
-	private String _finishStatus;
 
 }

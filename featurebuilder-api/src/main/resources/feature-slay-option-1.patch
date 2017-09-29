@@ -1,30 +1,13 @@
-diff --git a/game-functional-test/src/testIntegration/resources/features/character_slay.feature b/game-functional-test/src/testIntegration/resources/features/character_slay.feature
-index 8718e48..613d585 100644
---- a/game-functional-test/src/testIntegration/resources/features/character_slay.feature
-+++ b/game-functional-test/src/testIntegration/resources/features/character_slay.feature
-@@ -5,13 +5,13 @@ Feature: Slay of Characters
- 
-     Scenario: Slaying a Character (Jon)
- 
--        #Given a character called Jon Snow exists
--        #And Jon Snow is ALIVE
--        #When I slay Jon Snow
--        #Then Jon Snow is DEAD
-+        Given a character called Jon Snow exists
-+        And Jon Snow is ALIVE
-+        When I slay Jon Snow
-+        Then Jon Snow is DEAD
- 
-     Scenario: Slaying a dead character
- 
--        #Given Jon Snow is DEAD
--        #When I try to slay Jon Snow
--        #Then I can't slay Jon Snow
-\ No newline at end of file
-+        Given Jon Snow is DEAD
-+        When I try to slay Jon Snow
-+        Then I can't slay Jon Snow
-\ No newline at end of file
+From edb81eadb04c991144c20650fbe7d5ea57281e3d Mon Sep 17 00:00:00 2001
+From: Julio Camarero <julio.camarero@liferay.com>
+Date: Thu, 28 Sep 2017 16:27:04 +0200
+Subject: [PATCH 1/2] Add buttons to kill characters
+
+---
+ .../META-INF/resources/character_action.jsp        | 26 ++++++++++++++++++++++
+ .../src/main/resources/META-INF/resources/view.jsp | 20 +++++++++++++++++
+ 2 files changed, 46 insertions(+)
+
 diff --git a/game-web/src/main/resources/META-INF/resources/character_action.jsp b/game-web/src/main/resources/META-INF/resources/character_action.jsp
 index 03ef9df..8daea94 100644
 --- a/game-web/src/main/resources/META-INF/resources/character_action.jsp
@@ -99,3 +82,46 @@ index 8bc6400..feb3ae3 100644
 +	);
  </aui:script>
 \ No newline at end of file
+-- 
+2.11.0 (Apple Git-81)
+
+
+From 8cf5d6cb56b3b279a754e3ac335e850d554dfe75 Mon Sep 17 00:00:00 2001
+From: Julio Camarero <julio.camarero@liferay.com>
+Date: Thu, 28 Sep 2017 16:27:25 +0200
+Subject: [PATCH 2/2] Enable tests for slay of characters
+
+---
+ .../resources/features/character_slay.feature              | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/game-functional-test/src/testIntegration/resources/features/character_slay.feature b/game-functional-test/src/testIntegration/resources/features/character_slay.feature
+index 8718e48..613d585 100644
+--- a/game-functional-test/src/testIntegration/resources/features/character_slay.feature
++++ b/game-functional-test/src/testIntegration/resources/features/character_slay.feature
+@@ -5,13 +5,13 @@ Feature: Slay of Characters
+ 
+     Scenario: Slaying a Character (Jon)
+ 
+-        #Given a character called Jon Snow exists
+-        #And Jon Snow is ALIVE
+-        #When I slay Jon Snow
+-        #Then Jon Snow is DEAD
++        Given a character called Jon Snow exists
++        And Jon Snow is ALIVE
++        When I slay Jon Snow
++        Then Jon Snow is DEAD
+ 
+     Scenario: Slaying a dead character
+ 
+-        #Given Jon Snow is DEAD
+-        #When I try to slay Jon Snow
+-        #Then I can't slay Jon Snow
+\ No newline at end of file
++        Given Jon Snow is DEAD
++        When I try to slay Jon Snow
++        Then I can't slay Jon Snow
+\ No newline at end of file
+-- 
+2.11.0 (Apple Git-81)
+

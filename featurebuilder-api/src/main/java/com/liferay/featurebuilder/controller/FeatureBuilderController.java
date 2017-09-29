@@ -60,9 +60,9 @@ public class FeatureBuilderController {
 	 * @param featureId - the ID of the feature to build
 	 * @param devOptionId - the ID of the option chosen to build the feature
 	 */
+	@CrossOrigin
 	@PostMapping
 	@ResponseBody
-	@CrossOrigin
 	public String build(
 			@RequestParam(defaultValue = "pepe", required = false)
 				String userName,
@@ -86,9 +86,9 @@ public class FeatureBuilderController {
 		return build.getBuildId();
 	}
 
+	@CrossOrigin
 	@GetMapping("/{buildId}")
 	@ResponseBody
-	@CrossOrigin
 	public Build pullRequestURL(@PathVariable String buildId) {
 		return _buildManager.get(buildId);
 	}
@@ -102,6 +102,7 @@ public class FeatureBuilderController {
 	@PostConstruct
 	private void initializeExecutorService() {
 		int processors = Runtime.getRuntime().availableProcessors();
+
 		_log.debug(
 			"Initializing Executor Service with a Thred Pool of " + processors +
 				" Thread Workers.");

@@ -1,3 +1,43 @@
+From 4e98fb1f94c299f18e62b7bc9f71f7d3a57b0513 Mon Sep 17 00:00:00 2001
+From: Julio Camarero <julio.camarero@liferay.com>
+Date: Thu, 28 Sep 2017 16:20:17 +0200
+Subject: [PATCH 1/2] Add Button to add characters
+
+---
+ game-web/src/main/resources/META-INF/resources/view.jsp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/game-web/src/main/resources/META-INF/resources/view.jsp b/game-web/src/main/resources/META-INF/resources/view.jsp
+index 8bc6400..1eb81ec 100644
+--- a/game-web/src/main/resources/META-INF/resources/view.jsp
++++ b/game-web/src/main/resources/META-INF/resources/view.jsp
+@@ -164,6 +164,13 @@ PortletURL portletURL = renderResponse.createRenderURL();
+ 	</aui:form>
+ </div>
+ 
++<liferay-frontend:add-menu>
++	<liferay-frontend:add-menu-item
++		title='<%= LanguageUtil.get(request, "Add Something") %>'
++		url="<%= gameDisplayContext.getEditURL().toString() %>"
++	/>
++</liferay-frontend:add-menu>
++
+ <aui:script sandbox="<%= true %>">
+ 	$('#<portlet:namespace />deleteCharacters').on(
+ 		'click',
+-- 
+2.11.0 (Apple Git-81)
+
+
+From 536d954b456e1dfae5fffb4f4074d43502609261 Mon Sep 17 00:00:00 2001
+From: Julio Camarero <julio.camarero@liferay.com>
+Date: Thu, 28 Sep 2017 16:20:32 +0200
+Subject: [PATCH 2/2] Enable tests for creation of characters
+
+---
+ .../resources/features/character_creation.feature          | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
 diff --git a/game-functional-test/src/testIntegration/resources/features/character_creation.feature b/game-functional-test/src/testIntegration/resources/features/character_creation.feature
 index c79f48e..b2626b8 100644
 --- a/game-functional-test/src/testIntegration/resources/features/character_creation.feature
@@ -26,21 +66,6 @@ index c79f48e..b2626b8 100644
 \ No newline at end of file
 +        Then I can't save the character
 \ No newline at end of file
-diff --git a/game-web/src/main/resources/META-INF/resources/view.jsp b/game-web/src/main/resources/META-INF/resources/view.jsp
-index 8bc6400..1eb81ec 100644
---- a/game-web/src/main/resources/META-INF/resources/view.jsp
-+++ b/game-web/src/main/resources/META-INF/resources/view.jsp
-@@ -164,6 +164,13 @@ PortletURL portletURL = renderResponse.createRenderURL();
- 	</aui:form>
- </div>
- 
-+<liferay-frontend:add-menu>
-+	<liferay-frontend:add-menu-item
-+		title='<%= LanguageUtil.get(request, "Add Something") %>'
-+		url="<%= gameDisplayContext.getEditURL().toString() %>"
-+	/>
-+</liferay-frontend:add-menu>
-+
- <aui:script sandbox="<%= true %>">
- 	$('#<portlet:namespace />deleteCharacters').on(
- 		'click',
+-- 
+2.11.0 (Apple Git-81)
+
