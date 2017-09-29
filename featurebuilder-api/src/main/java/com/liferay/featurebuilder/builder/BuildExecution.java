@@ -36,6 +36,7 @@ import org.eclipse.egit.github.core.PullRequestMarker;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.User;
 import org.eclipse.egit.github.core.client.GitHubClient;
+import org.eclipse.egit.github.core.service.IssueService;
 import org.eclipse.egit.github.core.service.PullRequestService;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -75,28 +76,33 @@ public class BuildExecution implements Runnable {
 
 			_push();
 
-			_createPullRequest();
+			PullRequest pullRequest = _createPullRequest();
+
+			_postTravisComment(pullRequest);
 		}
 		catch (GitAPIException gapie) {
 			_build.addLog("Error - Exception from Git Client.");
 
 			_log.error("Exception from Git Client.", gapie);
 
-			_build.setFinishStatus("The job can't be executed: Exception from Git Client.");
+			_build.setFinishStatus(
+				"The job can't be executed: Exception from Git Client.");
 		}
 		catch (FileNotFoundException fnfe) {
 			_build.addLog("Error - Exception trying to read patch file.");
 
 			_log.error("Unable to find a File.", fnfe);
 
-			_build.setFinishStatus("The job can't be executed: Unable to find a File.");
+			_build.setFinishStatus(
+				"The job can't be executed: Unable to find a File.");
 		}
 		catch (IOException ioe) {
 			_build.addLog("Error - Exception trying to write a file.");
 
 			_log.error("Unable to write to a File.", ioe);
 
-			_build.setFinishStatus("The job can't be executed: Unable to write to a File.");
+			_build.setFinishStatus(
+				"The job can't be executed: Unable to write to a File.");
 		}
 		catch (Exception e) {
 			_build.addLog("System Error");
@@ -219,8 +225,7 @@ public class BuildExecution implements Runnable {
 
 		pullRequest.setHead(head);
 
-		pullRequest = pullRequestService.createPullRequest(
-			_getRepo(), pullRequest);
+		pullRequest = pullRequestService.createPullRequest(_repo, pullRequest);
 
 		_log.debug(
 			"Pull request successfully sent at: " + pullRequest.getHtmlUrl());
@@ -251,22 +256,6 @@ public class BuildExecution implements Runnable {
 		return new File(resource.getFile());
 	}
 
-	private Repository _getRepo() {
-		String[] repoNameParts = _githubRepo.split("/");
-
-		Repository repo = new Repository();
-
-		User user = new User();
-
-		user.setLogin(repoNameParts[0]);
-
-		repo.setOwner(user);
-
-		repo.setName(repoNameParts[1]);
-
-		return repo;
-	}
-
 	private void _initialize() throws IOException {
 		_build.addLog("Starting execution...");
 
@@ -290,6 +279,47 @@ public class BuildExecution implements Runnable {
 
 		_directory = new File(
 			"/tmp/" + _branch + String.valueOf(_random.nextLong()));
+
+		// Calculate Repo
+
+		String[] repoNameParts = _githubRepo.split("/");
+
+		_repo = new Repository();
+
+		User user = new User();
+
+		user.setLogin(repoNameParts[0]);
+
+		_repo.setOwner(user);
+
+		_repo.setName(repoNameParts[1]);
+	}
+
+	private void _postTravisComment(PullRequest pullRequest)
+		throws IOException {
+
+		GitHubClient gitHubClient = new GitHubClient();
+
+		gitHubClient.setCredentials(
+			_credentialsManager.getGithubUser(),
+			_credentialsManager.getGithubPassword());
+
+		IssueService service = new IssueService(gitHubClient);
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(":thumbsup: Thanks a lot for playing with us! <br />\n");
+		sb.append("Your changes are being tested right now, if you wait a few minutes, I will post another comment here with the results.<br />\n");
+		sb.append("<ul>");
+		sb.append("<li>Here is the list of <a href=\"https://travis-ci.org/liferay-labs/game-of-liferay/pull_requests\">:nut_and_bolt:  Travis Builds</a>. </li>");
+		sb.append("<li>Check the <a href=\"https://coveralls.io/github/liferay-labs/game-of-liferay\">:bar_chart: Code Coverage</a> of the project.</li>");
+		sb.append("<li>This is the <a href=\"https://github.com/liferay-labs\">:open_file_folder: source code</a> of the Game of Liferay</a>");
+		sb.append("<li>And here you can find the :scroll: slides for our presentation</li>");
+		sb.append("</ul><br />");
+		sb.append("Come and talk to us during DEVCON if you have any question! :blush:<br />");
+		sb.append("<a href=\"https://twitter.com/juliocamarero\">Julio</a> & <a href=\"https://twitter.com/CGcastellano\">Cris</a>");
+
+		service.createComment(_repo, pullRequest.getNumber(), sb.toString());
 	}
 
 	private void _push() throws GitAPIException {
@@ -322,5 +352,6 @@ public class BuildExecution implements Runnable {
 	private String _githubRepoCloneURL;
 	private File _patch;
 	private Random _random;
+	private Repository _repo;
 
 }
