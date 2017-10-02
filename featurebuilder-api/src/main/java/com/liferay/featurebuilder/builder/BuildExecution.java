@@ -314,7 +314,8 @@ public class BuildExecution implements Runnable {
 		sb.append("<li>Here is the list of <a href=\"https://travis-ci.org/liferay-labs/game-of-liferay/pull_requests\">:nut_and_bolt:  Travis Builds</a>. </li>");
 		sb.append("<li>Check the <a href=\"https://coveralls.io/github/liferay-labs/game-of-liferay\">:bar_chart: Code Coverage</a> of the project.</li>");
 		sb.append("<li>This is the <a href=\"https://github.com/liferay-labs\">:open_file_folder: source code</a> of the Game of Liferay</a>");
-		sb.append("<li>And here you can find the :scroll: slides for our presentation</li>");
+		sb.append("<li>Play with the <a href=\"http://final-gol.wedeploy.io/\">:crown: Demo</a> with your feature built. ");
+		sb.append("<li>And here you can find the <a href=\"https://www.slideshare.net/secret/GFv9tXCCfC6Cxa\">:scroll: slides</a> for our presentation</li>");
 		sb.append("</ul><br />");
 		sb.append("Come and talk to us during DEVCON if you have any question! :blush:<br />");
 		sb.append("<a href=\"https://twitter.com/juliocamarero\">Julio</a> & <a href=\"https://twitter.com/CGcastellano\">Cris</a>");
