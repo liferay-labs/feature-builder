@@ -317,7 +317,7 @@ public class BuildExecution implements Runnable {
 		sb.append("<li>Play with the <a href=\"https://final.gol.wedeploy.io//\">:crown: Demo</a> with your feature built. ");
 		sb.append("<li>And here you can find the <a href=\"https://www.slideshare.net/secret/GFv9tXCCfC6Cxa\">:scroll: slides</a> for our presentation</li>");
 		sb.append("</ul><br />");
-		sb.append("Come and talk to us during DEVCON if you have any question! :blush:<br />");
+		sb.append("Come and talk to us during the event if you have any question! :blush:<br />");
 		sb.append("<a href=\"https://twitter.com/juliocamarero\">Julio</a> & <a href=\"https://twitter.com/CGcastellano\">Cris</a>");
 
 		service.createComment(_repo, pullRequest.getNumber(), sb.toString());
